@@ -47,6 +47,19 @@
     }
     #brand { position: fixed; top: 20px; left: 20px; font-size: 22px; font-weight: 800; color: white; letter-spacing: 0.1em; z-index: 100; text-shadow: 0 2px 8px rgba(0,0,0,0.8); }
     #brand span { color: #f4a62a; }
+    #debug-overlay {
+  position: fixed;
+  bottom: 120px;
+  left: 10px;
+  background: rgba(0,0,0,0.85);
+  color: #0f0;
+  font-size: 10px;
+  font-family: monospace;
+  padding: 8px 12px;
+  border-radius: 8px;
+  z-index: 200;
+  display: block;
+}
   </style>
 </head>
 <body>
@@ -59,6 +72,7 @@
 
 <div id="brand">Dine<span>AR</span></div>
 <div id="scan-hint">📷 Point camera at menu card</div>
+  <div id="debug-overlay"></div>
 
 <div id="dish-card">
   <div class="dish-name" id="card-name"></div>
@@ -185,7 +199,12 @@ AFRAME.registerComponent('auto-normalize', {
         -center.z * scaleFactor
       );
 
-      console.log(`[auto-normalize] Model: maxDim=${maxDim.toFixed(4)}, scale=${scaleFactor.toFixed(4)}, size after: ${(maxDim * scaleFactor).toFixed(4)}`);
+      const msg = `[${this.el.getAttribute('gltf-model')}] maxDim=${maxDim.toFixed(4)} scale=${scaleFactor.toFixed(4)}`;
+console.log(msg);
+
+// show on screen
+const dbg = document.getElementById('debug-overlay');
+dbg.innerHTML += msg + '<br>';
     });
   }
 });
