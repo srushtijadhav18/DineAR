@@ -241,7 +241,7 @@
           // Center the model on the target anchor (ignore Y so it sits on the surface)
           this.el.object3D.position.set(
             -center.x * scaleFactor,
-            -box.min.y * scaleFactor,  // sit on the plane, not float/sink
+            0,  // sit on the plane, not float/sink
             -center.z * scaleFactor
           );
 
