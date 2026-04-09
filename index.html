@@ -6,7 +6,6 @@
   <title>DineAR - Smart AR Menu</title>
 
   <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
-  <!-- MindAR + A-Frame -->
   <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
 
   <style>
@@ -21,121 +20,73 @@
       z-index: 9999; color: white;
       transition: opacity 0.5s;
     }
-    #loading-screen h1 {
-      font-size: 42px; font-weight: 800;
-      letter-spacing: 0.1em; margin-bottom: 8px;
-    }
+    #loading-screen h1 { font-size: 42px; font-weight: 800; letter-spacing: 0.1em; margin-bottom: 8px; }
     #loading-screen h1 span { color: #f4a62a; }
-    #loading-screen p {
-      font-size: 13px; opacity: 0.5;
-      letter-spacing: 0.2em; text-transform: uppercase;
-      margin-bottom: 40px;
-    }
-    .loader {
-      width: 48px; height: 48px;
-      border: 3px solid #333;
-      border-top-color: #f4a62a;
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-    }
+    #loading-screen p { font-size: 13px; opacity: 0.5; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 40px; }
+    .loader { width: 48px; height: 48px; border: 3px solid #333; border-top-color: #f4a62a; border-radius: 50%; animation: spin 0.8s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    /* Dish info card shown when target found */
     #dish-card {
-      position: fixed;
-      bottom: 30px; left: 50%;
+      position: fixed; bottom: 30px; left: 50%;
       transform: translateX(-50%);
-      background: rgba(10,8,6,0.92);
-      border: 1px solid #f4a62a44;
-      border-radius: 16px;
-      padding: 16px 24px;
-      min-width: 280px;
-      max-width: 340px;
-      display: none;
-      z-index: 100;
-      backdrop-filter: blur(12px);
-      animation: slideUp 0.3s ease;
+      background: rgba(10,8,6,0.92); border: 1px solid #f4a62a44;
+      border-radius: 16px; padding: 16px 24px;
+      min-width: 280px; max-width: 340px;
+      display: none; z-index: 100;
+      backdrop-filter: blur(12px); animation: slideUp 0.3s ease;
     }
     @keyframes slideUp {
       from { transform: translateX(-50%) translateY(20px); opacity: 0; }
       to   { transform: translateX(-50%) translateY(0); opacity: 1; }
     }
-    #dish-card .dish-name {
-      font-size: 20px; font-weight: 700;
-      color: #fff; margin-bottom: 4px;
-    }
-    #dish-card .dish-price {
-      font-size: 18px; color: #f4a62a;
-      font-weight: 600; margin-bottom: 8px;
-    }
-    #dish-card .dish-desc {
-      font-size: 12px; color: #aaa;
-      line-height: 1.5; margin-bottom: 10px;
-    }
-    #dish-card .dish-tags {
-      display: flex; gap: 6px; flex-wrap: wrap;
-    }
-    #dish-card .tag {
-      font-size: 10px; font-weight: 600;
-      padding: 3px 8px; border-radius: 4px;
-      text-transform: uppercase; letter-spacing: 0.1em;
-    }
+    #dish-card .dish-name  { font-size: 20px; font-weight: 700; color: #fff; margin-bottom: 4px; }
+    #dish-card .dish-price { font-size: 18px; color: #f4a62a; font-weight: 600; margin-bottom: 8px; }
+    #dish-card .dish-desc  { font-size: 12px; color: #aaa; line-height: 1.5; margin-bottom: 10px; }
+    #dish-card .dish-tags  { display: flex; gap: 6px; flex-wrap: wrap; }
+    #dish-card .tag        { font-size: 10px; font-weight: 600; padding: 3px 8px; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.1em; }
     .tag-veg    { background: #1a3d1a; color: #4caf50; border: 1px solid #4caf5044; }
     .tag-nonveg { background: #3d1a1a; color: #f44336; border: 1px solid #f4433644; }
     .tag-info   { background: #1a2a3d; color: #64b5f6; border: 1px solid #64b5f644; }
 
-    /* Scan hint at top */
     #scan-hint {
-      position: fixed; top: 20px; left: 50%;
-      transform: translateX(-50%);
-      background: rgba(0,0,0,0.7);
-      color: #f4a62a; font-size: 11px;
-      font-weight: 600; letter-spacing: 0.2em;
-      text-transform: uppercase;
-      padding: 8px 18px; border-radius: 100px;
-      border: 1px solid #f4a62a44;
-      z-index: 100;
-      backdrop-filter: blur(8px);
+      position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+      background: rgba(0,0,0,0.7); color: #f4a62a; font-size: 11px;
+      font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase;
+      padding: 8px 18px; border-radius: 100px; border: 1px solid #f4a62a44;
+      z-index: 100; backdrop-filter: blur(8px);
     }
-
-    /* Brand watermark */
     #brand {
-      position: fixed; top: 20px; left: 20px;
-      font-size: 22px; font-weight: 800;
-      color: white; letter-spacing: 0.1em;
-      z-index: 100; text-shadow: 0 2px 8px rgba(0,0,0,0.8);
+      position: fixed; top: 20px; left: 20px; font-size: 22px; font-weight: 800;
+      color: white; letter-spacing: 0.1em; z-index: 100; text-shadow: 0 2px 8px rgba(0,0,0,0.8);
     }
     #brand span { color: #f4a62a; }
+    #debug-overlay {
+      position: fixed; bottom: 120px; left: 10px; background: rgba(0,0,0,0.85);
+      color: #0f0; font-size: 10px; font-family: monospace; padding: 8px 12px;
+      border-radius: 8px; z-index: 200; max-width: 300px; line-height: 1.6;
+      display: none; /* change to 'block' to debug */
+    }
   </style>
 </head>
 <body>
 
-  <!-- Loading Screen -->
   <div id="loading-screen">
     <h1>Dine<span>AR</span></h1>
     <p>Smart AR Menu</p>
     <div class="loader"></div>
   </div>
 
-  <!-- UI Overlays -->
   <div id="brand">Dine<span>AR</span></div>
   <div id="scan-hint">📷 Point camera at menu card</div>
+  <div id="debug-overlay"></div>
 
-  <!-- Dish Info Card -->
   <div id="dish-card">
-    <div class="dish-name" id="card-name"></div>
+    <div class="dish-name"  id="card-name"></div>
     <div class="dish-price" id="card-price"></div>
-    <div class="dish-desc" id="card-desc"></div>
-    <div class="dish-tags" id="card-tags"></div>
+    <div class="dish-desc"  id="card-desc"></div>
+    <div class="dish-tags"  id="card-tags"></div>
   </div>
 
-  <!-- AR SCENE -->
-  <!--
-    IMPORTANT: Replace "targets.mind" with your compiled .mind file.
-    Each <a-entity mindar-image-target="targetIndex: N"> corresponds to
-    the Nth image in your targets.mind file (0-indexed).
-    Order must match the order you compiled: pizza=0, momos=1, thali=2, paneer=3, cake=4
-  -->
   <a-scene
     mindar-image="imageTargetSrc: targets.mind; autoStart: true; uiLoading: no; uiError: no; uiScanning: no;"
     color-space="sRGB"
@@ -144,7 +95,6 @@
     device-orientation-permission-ui="enabled: false">
 
     <a-assets>
-      <!-- Preload all 5 models — make sure these files are in the same folder as this HTML -->
       <a-asset-item id="pizza-glb"  src="pizza.glb"></a-asset-item>
       <a-asset-item id="momos-glb"  src="momos.glb"></a-asset-item>
       <a-asset-item id="thali-glb"  src="thali.glb"></a-asset-item>
@@ -152,203 +102,193 @@
       <a-asset-item id="cake-glb"   src="cake.glb"></a-asset-item>
     </a-assets>
 
-   <!-- PIZZA (targetIndex: 0) -->
     <a-entity mindar-image-target="targetIndex: 0" id="target-pizza">
-      <a-entity
-        gltf-model="#pizza-glb"
-        position="0 0.02 0"
-        scale="0.5 0.5 0.5"
-        rotation="0 -90 0"
-        gesture-handler>
-      </a-entity>
+      <a-entity id="mesh-pizza"  gltf-model="#pizza-glb"  model-normalizer="desiredSize: 0.18; name: pizza"  gesture-handler></a-entity>
     </a-entity>
 
-    <!-- MOMOS (targetIndex: 1) -->
-    <a-entity mindar-image-target="targetIndex: 1"
-              id="target-momos">
-      <a-entity
-        gltf-model="#momos-glb"
-        position="0 0.02 0"
-        scale="1.5 1.5 1.5"
-        rotation="0 -90 0"
-        gesture-handler>
-      </a-entity>
+    <a-entity mindar-image-target="targetIndex: 1" id="target-momos">
+      <a-entity id="mesh-momos"  gltf-model="#momos-glb"  model-normalizer="desiredSize: 0.15; name: momos"  gesture-handler></a-entity>
     </a-entity>
 
-    <!-- THALI (targetIndex: 2) -->
     <a-entity mindar-image-target="targetIndex: 2" id="target-thali">
-      <a-entity
-        gltf-model="#thali-glb"
-        position="0 0.02 0"
-        scale="16.0 16.0 16.0"
-        rotation="-90 0 0"
-        gesture-handler>
-      </a-entity>
+      <a-entity id="mesh-thali"  gltf-model="#thali-glb"  model-normalizer="desiredSize: 0.20; name: thali"  gesture-handler></a-entity>
     </a-entity>
 
-    <!-- PANEER (targetIndex: 3) -->
     <a-entity mindar-image-target="targetIndex: 3" id="target-paneer">
-      <a-entity
-        gltf-model="#paneer-glb"
-        position="0 0.02 0"
-        scale="16.0 16.0 16.0"
-        rotation="-90 0 0"
-        gesture-handler>
-      </a-entity>
+      <a-entity id="mesh-paneer" gltf-model="#paneer-glb" model-normalizer="desiredSize: 0.18; name: paneer" gesture-handler></a-entity>
     </a-entity>
 
-    <!-- CAKE (targetIndex: 4) -->
     <a-entity mindar-image-target="targetIndex: 4" id="target-cake">
-      <a-entity
-        gltf-model="#cake-glb"
-        position="0 0 0"
-        scale="0 0 0"
-        rotation="90 0 0"
-        gesture-handler>
-      </a-entity>
+      <a-entity id="mesh-cake"   gltf-model="#cake-glb"   model-normalizer="desiredSize: 0.16; name: cake"   gesture-handler></a-entity>
     </a-entity>
 
     <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
   </a-scene>
 
   <script>
-    // Dish data for the info card
-    const dishes = {
-      0: {
-        name: "🍕 Margherita Pizza",
-        price: "₹299",
-        desc: "Wood-fired base with San Marzano tomato sauce, fresh mozzarella and basil.",
-        tags: [
-          { label: "Veg", cls: "tag-veg" },
-          { label: "650 kcal", cls: "tag-info" },
-          { label: "20 min", cls: "tag-info" }
-        ]
+    // ─── MODEL NORMALIZER ────────────────────────────────────────────────────────
+    // Waits for model-loaded, then traverses ALL child meshes to build a true
+    // bounding box, computes exact scale to hit desiredSize, and centers it.
+    AFRAME.registerComponent('model-normalizer', {
+      schema: {
+        desiredSize: { type: 'number', default: 0.18 },
+        name:        { type: 'string', default: 'model' }
       },
-      1: {
-        name: "🥟 Steamed Momos",
-        price: "₹149",
-        desc: "Handcrafted dumplings with spiced filling, served with schezwan chutney.",
-        tags: [
-          { label: "Veg", cls: "tag-veg" },
-          { label: "280 kcal", cls: "tag-info" },
-          { label: "15 min", cls: "tag-info" }
-        ]
+
+      init: function () {
+        this.normalized = false;
+        this.el.addEventListener('model-loaded', () => {
+          setTimeout(() => this.normalize(), 200);
+        });
       },
-      2: {
-        name: "🍛 Dal Tadka Thali",
-        price: "₹199",
-        desc: "Slow-cooked yellow lentils, boondi raita, fresh rotis, cucumber and buttermilk.",
-        tags: [
-          { label: "Veg", cls: "tag-veg" },
-          { label: "520 kcal", cls: "tag-info" },
-          { label: "25 min", cls: "tag-info" }
-        ]
-      },
-      3: {
-        name: "🫕 Paneer Butter Masala",
-        price: "₹249",
-        desc: "Cottage cheese in rich tomato-cream gravy, served with freshly made rotis.",
-        tags: [
-          { label: "Veg", cls: "tag-veg" },
-          { label: "480 kcal", cls: "tag-info" },
-          { label: "20 min", cls: "tag-info" }
-        ]
-      },
-      4: {
-        name: "🍰 Dark Chocolate Gateau",
-        price: "₹179",
-        desc: "Layers of rich dark chocolate sponge with ganache, wafer rolls and cherry.",
-        tags: [
-          { label: "Veg", cls: "tag-veg" },
-          { label: "420 kcal", cls: "tag-info" },
-          { label: "Chef's Pick", cls: "tag-info" }
-        ]
-      }
-    }
 
-    const card = document.getElementById('dish-card')
-    const cardName = document.getElementById('card-name')
-    const cardPrice = document.getElementById('card-price')
-    const cardDesc = document.getElementById('card-desc')
-    const cardTags = document.getElementById('card-tags')
+      normalize: function () {
+        if (this.normalized) return;
 
-    function showCard(index) {
-      const dish = dishes[index]
-      if (!dish) return
-      cardName.textContent = dish.name
-      cardPrice.textContent = dish.price
-      cardDesc.textContent = dish.desc
-      cardTags.innerHTML = dish.tags.map(t =>
-        `<span class="tag ${t.cls}">${t.label}</span>`
-      ).join('')
-      card.style.display = 'block'
-    }
+        // Count meshes — if none yet, retry
+        let meshCount = 0;
+        this.el.object3D.traverse(c => { if (c.isMesh) meshCount++; });
 
-    function hideCard() {
-      card.style.display = 'none'
-    }
-
-    // Listen for target found/lost events on each entity
-    const sceneEl = document.querySelector('a-scene')
-
-    sceneEl.addEventListener('loaded', () => {
-      // Hide loading screen
-      setTimeout(() => {
-        const ls = document.getElementById('loading-screen')
-        ls.style.opacity = '0'
-        setTimeout(() => ls.style.display = 'none', 500)
-      }, 1500)
-
-      // Attach events to each target
-      Object.keys(dishes).forEach(index => {
-        const el = document.getElementById(`target-${['pizza','momos','thali','paneer','cake'][index]}`)
-        if (!el) return
-        el.addEventListener('targetFound', () => showCard(Number(index)))
-        el.addEventListener('targetLost',  () => hideCard())
-      })
-    })
-  </script>
-  </script>
-
-<script>
-//  Gesture handler 
-AFRAME.registerComponent('gesture-handler', {
-  init: function () {
-    this.scale = this.el.object3D.scale.x;
-    this.startDist = null;
-
-    this.el.sceneEl.canvas.addEventListener('touchmove', (e) => {
-
-     // ROTATE (BASED ON DRAG)
-      if (e.touches.length === 1) {
-        let currentX = e.touches[0].clientX;
-      
-        if (this.prevX !== null) {
-          let delta = currentX - this.prevX;
-         this.el.object3D.rotation.y += delta * 0.03; 
+        if (meshCount === 0) {
+          console.warn(`[${this.data.name}] no meshes yet, retrying...`);
+          setTimeout(() => this.normalize(), 300);
+          return;
         }
-      
-        this.prevX = currentX;
-      } else {
-        this.prevX = null;
-      }
 
-      // ZOOM
-      if (e.touches.length === 2) {
-        let dx = e.touches[0].clientX - e.touches[1].clientX;
-        let dy = e.touches[0].clientY - e.touches[1].clientY;
-        let dist = Math.sqrt(dx*dx + dy*dy);
+        this.normalized = true;
 
-        if (!this.startDist) this.startDist = dist;
+        // Reset scale/position before measuring so box is in local space
+        this.el.object3D.scale.set(1, 1, 1);
+        this.el.object3D.position.set(0, 0, 0);
 
-        let scale = this.scale * (dist / this.startDist);
-        scale = Math.min(Math.max(scale, 0.4), 1.5);
+        const box = new THREE.Box3().setFromObject(this.el.object3D);
+        const size   = new THREE.Vector3();
+        const center = new THREE.Vector3();
+        box.getSize(size);
+        box.getCenter(center);
 
-        this.el.object3D.scale.set(scale, scale, scale);
+        const maxDim = Math.max(size.x, size.y, size.z);
+        if (maxDim === 0) { console.warn(`[${this.data.name}] zero bbox`); return; }
+
+        const s = this.data.desiredSize / maxDim;
+        this.el.object3D.scale.set(s, s, s);
+
+        // Center horizontally, sit bottom edge on the plane
+        this.el.object3D.position.set(
+          -center.x * s,
+          0.01,
+          -center.z * s
+        );
+
+        const msg = `[${this.data.name}] raw ${size.x.toFixed(2)}×${size.y.toFixed(2)}×${size.z.toFixed(2)} scale→${s.toFixed(5)}`;
+        console.log(msg);
+        const dbg = document.getElementById('debug-overlay');
+        if (dbg) dbg.innerHTML += msg + '<br>';
+
+        this.el._normalizedScale = s;
       }
     });
-  }
-});
-</script>
+
+
+    // ─── GESTURE HANDLER ────────────────────────────────────────────────────────
+    AFRAME.registerComponent('gesture-handler', {
+      init: function () {
+        this.baseScale = null;
+        this.startDist = null;
+        this.prevX     = null;
+
+        // Pick up scale AFTER normalizer has run (normalizer: 200ms, we wait 400ms)
+        this.el.addEventListener('model-loaded', () => {
+          setTimeout(() => { this.baseScale = this.el.object3D.scale.x; }, 400);
+        });
+
+        const canvas = this.el.sceneEl.canvas;
+
+        canvas.addEventListener('touchstart', (e) => {
+          if (e.touches.length === 1) {
+            this.prevX = e.touches[0].clientX;
+          }
+          if (e.touches.length === 2) {
+            const dx = e.touches[0].clientX - e.touches[1].clientX;
+            const dy = e.touches[0].clientY - e.touches[1].clientY;
+            this.startDist = Math.sqrt(dx*dx + dy*dy);
+            this.baseScale = this.el.object3D.scale.x;
+          }
+        });
+
+        canvas.addEventListener('touchmove', (e) => {
+          e.preventDefault();
+
+          if (e.touches.length === 1) {
+            const cx = e.touches[0].clientX;
+            if (this.prevX !== null) {
+              this.el.object3D.rotation.y += (cx - this.prevX) * 0.04;
+            }
+            this.prevX = cx;
+          } else {
+            this.prevX = null;
+          }
+
+          if (e.touches.length === 2 && this.startDist && this.baseScale) {
+            const dx = e.touches[0].clientX - e.touches[1].clientX;
+            const dy = e.touches[0].clientY - e.touches[1].clientY;
+            const dist = Math.sqrt(dx*dx + dy*dy);
+            let ns = this.baseScale * (dist / this.startDist);
+            ns = Math.min(Math.max(ns, this.baseScale * 0.4), this.baseScale * 3.5);
+            this.el.object3D.scale.set(ns, ns, ns);
+          }
+        }, { passive: false });
+
+        canvas.addEventListener('touchend', (e) => {
+          if (e.touches.length < 2) {
+            this.startDist = null;
+            this.baseScale = this.el.object3D.scale.x;
+          }
+          if (e.touches.length === 0) this.prevX = null;
+        });
+      }
+    });
+
+
+    // ─── DISH DATA ───────────────────────────────────────────────────────────────
+    const dishes = {
+      0: { name:"🍕 Margherita Pizza",      price:"₹299", desc:"Wood-fired base with San Marzano tomato sauce, fresh mozzarella and basil.",         tags:[{label:"Veg",cls:"tag-veg"},{label:"650 kcal",cls:"tag-info"},{label:"20 min",cls:"tag-info"}] },
+      1: { name:"🥟 Steamed Momos",         price:"₹149", desc:"Handcrafted dumplings with spiced filling, served with schezwan chutney.",            tags:[{label:"Veg",cls:"tag-veg"},{label:"280 kcal",cls:"tag-info"},{label:"15 min",cls:"tag-info"}] },
+      2: { name:"🍛 Dal Tadka Thali",       price:"₹199", desc:"Slow-cooked yellow lentils, boondi raita, fresh rotis, cucumber and buttermilk.",     tags:[{label:"Veg",cls:"tag-veg"},{label:"520 kcal",cls:"tag-info"},{label:"25 min",cls:"tag-info"}] },
+      3: { name:"🫕 Paneer Butter Masala",  price:"₹249", desc:"Cottage cheese in rich tomato-cream gravy, served with freshly made rotis.",          tags:[{label:"Veg",cls:"tag-veg"},{label:"480 kcal",cls:"tag-info"},{label:"20 min",cls:"tag-info"}] },
+      4: { name:"🍰 Dark Chocolate Gateau", price:"₹179", desc:"Layers of rich dark chocolate sponge with ganache, wafer rolls and cherry.",          tags:[{label:"Veg",cls:"tag-veg"},{label:"420 kcal",cls:"tag-info"},{label:"Chef's Pick",cls:"tag-info"}] }
+    };
+
+    const card      = document.getElementById('dish-card');
+    const cardName  = document.getElementById('card-name');
+    const cardPrice = document.getElementById('card-price');
+    const cardDesc  = document.getElementById('card-desc');
+    const cardTags  = document.getElementById('card-tags');
+
+    function showCard(i) {
+      const d = dishes[i]; if (!d) return;
+      cardName.textContent  = d.name;
+      cardPrice.textContent = d.price;
+      cardDesc.textContent  = d.desc;
+      cardTags.innerHTML = d.tags.map(t => `<span class="tag ${t.cls}">${t.label}</span>`).join('');
+      card.style.display = 'block';
+    }
+    function hideCard() { card.style.display = 'none'; }
+
+    document.querySelector('a-scene').addEventListener('loaded', () => {
+      setTimeout(() => {
+        const ls = document.getElementById('loading-screen');
+        ls.style.opacity = '0';
+        setTimeout(() => ls.style.display = 'none', 500);
+      }, 1500);
+
+      ['pizza','momos','thali','paneer','cake'].forEach((name, i) => {
+        const el = document.getElementById(`target-${name}`);
+        if (!el) return;
+        el.addEventListener('targetFound', () => showCard(i));
+        el.addEventListener('targetLost',  () => hideCard());
+      });
+    });
+  </script>
 </body>
 </html>
