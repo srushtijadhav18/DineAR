@@ -157,10 +157,11 @@
               id="target-pizza">
       <a-entity
         gltf-model="#pizza-glb"
-        position="0 0.05 0"
-        scale="0.5 0.5 0.5"
-        rotation="0 0 0"
-        animation="property: rotation; to: 0 360 0; loop: true; dur: 8000; easing: linear">
+        position="0 0.02 0"
+        scale="0.6 0.6 0.6"
+        rotation="-90 0 0"
+        gesture-handler>
+        
       </a-entity>
     </a-entity>
 
@@ -169,9 +170,10 @@
               id="target-momos">
       <a-entity
         gltf-model="#momos-glb"
-        position="0 0.05 0"
-        scale="0.5 0.5 0.5"
-        animation="property: rotation; to: 0 360 0; loop: true; dur: 8000; easing: linear">
+        position="0 0.02 0"
+        scale="0.6 0.6 0.6"
+        rotation="-90 0 0"
+        gesture-handler>
       </a-entity>
     </a-entity>
 
@@ -180,9 +182,11 @@
               id="target-thali">
       <a-entity
         gltf-model="#thali-glb"
-        position="0 0.05 0"
-        scale="0.5 0.5 0.5"
-        animation="property: rotation; to: 0 360 0; loop: true; dur: 8000; easing: linear">
+        position="0 0.02 0"
+        scale="0.8 0.8 0.8"
+        rotation="-90 0 0"
+        gesture-handler>
+
       </a-entity>
     </a-entity>
 
@@ -191,9 +195,11 @@
               id="target-paneer">
       <a-entity
         gltf-model="#paneer-glb"
-        position="0 0.05 0"
-        scale="0.5 0.5 0.5"
-        animation="property: rotation; to: 0 360 0; loop: true; dur: 8000; easing: linear">
+        position="0 0.02 0"
+        scale="0.8 0.8 0.8"
+        rotation="-90 0 0"
+        gesture-handler>
+       
       </a-entity>
     </a-entity>
 
@@ -202,9 +208,11 @@
               id="target-cake">
       <a-entity
         gltf-model="#cake-glb"
-        position="0 0.05 0"
-        scale="0.15 0.15 0.15"
-        animation="property: rotation; to: 0 360 0; loop: true; dur: 8000; easing: linear">
+        position="0 0.02 0"
+        scale="0.25 0.25 0.25"
+        rotation="-90 0 0"
+        gesture-handler>
+      
       </a-entity>
     </a-entity>
 
@@ -308,5 +316,38 @@
       })
     })
   </script>
+  </script>
+
+<script>
+//  Gesture handler 
+AFRAME.registerComponent('gesture-handler', {
+  init: function () {
+    this.scale = this.el.object3D.scale.x;
+    this.startDist = null;
+
+    this.el.sceneEl.canvas.addEventListener('touchmove', (e) => {
+
+      // ROTATE
+      if (e.touches.length === 1) {
+        this.el.object3D.rotation.z += 0.01;
+      }
+
+      // ZOOM
+      if (e.touches.length === 2) {
+        let dx = e.touches[0].clientX - e.touches[1].clientX;
+        let dy = e.touches[0].clientY - e.touches[1].clientY;
+        let dist = Math.sqrt(dx*dx + dy*dy);
+
+        if (!this.startDist) this.startDist = dist;
+
+        let scale = this.scale * (dist / this.startDist);
+        scale = Math.min(Math.max(scale, 0.4), 1.5);
+
+        this.el.object3D.scale.set(scale, scale, scale);
+      }
+    });
+  }
+});
+</script>
 </body>
 </html>
