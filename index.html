@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DineAR - Smart AR Menu</title>
+
+  <!-- MindAR + A-Frame -->
+  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { overflow: hidden; font-family: sans-serif; }
+
+    #loading-screen {
+      position: fixed; inset: 0;
+      background: #0d0d0d;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      z-index: 9999; color: white;
+      transition: opacity 0.5s;
+    }
+    #loading-screen h1 {
+      font-size: 42px; font-weight: 800;
+      letter-spacing: 0.1em; margin-bottom: 8px;
+    }
+    #loading-screen h1 span { color: #f4a62a; }
+    #loading-screen p {
+      font-size: 13px; opacity: 0.5;
+      letter-spacing: 0.2em; text-transform: uppercase;
+      margin-bottom: 40px;
+    }
+    .loader {
+      width: 48px; height: 48px;
+      border: 3px solid #333;
+      border-top-color: #f4a62a;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Dish info card shown when target found */
+    #dish-card {
+      position: fixed;
+      bottom: 30px; left: 50%;
+      transform: translateX(-50%);
+      background: rgba(10,8,6,0.92);
+      border: 1px solid #f4a62a44;
+      border-radius: 16px;
+      padding: 16px 24px;
+      min-width: 280px;
+      max-width: 340px;
+      display: none;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+      animation: slideUp 0.3s ease;
+    }
+    @keyframes slideUp {
+      from { transform: translateX(-50%) translateY(20px); opacity: 0; }
+      to   { transform: translateX(-50%) translateY(0); opacity: 1; }
+    }
+    #dish-card .dish-name {
+      font-size: 20px; font-weight: 700;
+      color: #fff; margin-bottom: 4px;
+    }
+    #dish-card .dish-price {
+      font-size: 18px; color: #f4a62a;
+      font-weight: 600; margin-bottom: 8px;
+    }
+    #dish-card .dish-desc {
+      font-size: 12px; color: #aaa;
+      line-height: 1.5; margin-bottom: 10px;
+    }
+    #dish-card .dish-tags {
+      display: flex; gap: 6px; flex-wrap: wrap;
+    }
+    #dish-card .tag {
+      font-size: 10px; font-weight: 600;
+      padding: 3px 8px; border-radius: 4px;
+      text-transform: uppercase; letter-spacing: 0.1em;
+    }
+    .tag-veg    { background: #1a3d1a; color: #4caf50; border: 1px solid #4caf5044; }
+    .tag-nonveg { background: #3d1a1a; color: #f44336; border: 1px solid #f4433644; }
+    .tag-info   { background: #1a2a3d; color: #64b5f6; border: 1px solid #64b5f644; }
+
+    /* Scan hint at top */
+    #scan-hint {
+      position: fixed; top: 20px; left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,0.7);
+      color: #f4a62a; font-size: 11px;
+      font-weight: 600; letter-spacing: 0.2em;
+      text-transform: uppercase;
+      padding: 8px 18px; border-radius: 100px;
+      border: 1px solid #f4a62a44;
+      z-index: 100;
+      backdrop-filter: blur(8px);
+    }
+
+    /* Brand watermark */
+    #brand {
+      position: fixed; top: 20px; left: 20px;
+      font-size: 22px; font-weight: 800;
+      color: white; letter-spacing: 0.1em;
+      z-index: 100; text-shadow: 0 2px 8px rgba(0,0,0,0.8);
+    }
+    #brand span { color: #f4a62a; }
+  </style>
+</head>
+<body>
+
+  <!-- Loading Screen -->
+  <div id="loading-screen">
+    <h1>Dine<span>AR</span></h1>
+    <p>Smart AR Menu</p>
+    <div class="loader"></div>
+  </div>
+
+  <!-- UI Overlays -->
+  <div id="brand">Dine<span>AR</span></div>
+  <div id="scan-hint">📷 Point camera at menu card</div>
+
+  <!-- Dish Info Card -->
+  <div id="dish-card">
+    <div class="dish-name" id="card-name"></div>
+    <div class="dish-price" id="card-price"></div>
+    <div class="dish-desc" id="card-desc"></div>
+    <div class="dish-tags" id="card-tags"></div>
+  </div>
+
+  <!-- AR SCENE -->
+  <!--
+    IMPORTANT: Replace "targets.mind" with your compiled .mind file.
+    Each <a-entity mindar-image-target="targetIndex: N"> corresponds to
+    the Nth image in your targets.mind file (0-indexed).
+    Order must match the order you compiled: pizza=0, momos=1, thali=2, paneer=3, cake=4
+  -->
+  <a-scene
+    mindar-image="imageTargetSrc: targets.mind; autoStart: true; uiLoading: no; uiError: no; uiScanning: no;"
+    color-space="sRGB"
+    renderer="colorManagement: true; physicallyCorrectLights: true"
+    vr-mode-ui="enabled: false"
+    device-orientation-permission-ui="enabled: false">
+
+    <a-assets>
+      <!-- Preload all 5 models — make sure these files are in the same folder as this HTML -->
+      <a-asset-item id="pizza-glb"  src="pizza.glb"></a-asset-item>
+      <a-asset-item id="momos-glb"  src="momos.glb"></a-asset-item>
+      <a-asset-item id="thali-glb"  src="thali.glb"></a-asset-item>
+      <a-asset-item id="paneer-glb" src="paneer.glb"></a-asset-item>
+      <a-asset-item id="cake-glb"   src="cake.glb"></a-asset-item>
+    </a-assets>
+
+    <!-- PIZZA (targetIndex: 0) -->
+    <a-entity mindar-image-target="targetIndex: 0"
+              id="target-pizza">
+      <a-entity
+        gltf-model="#pizza-glb"
+        position="0 0.1 0"
+        scale="0.08 0.08 0.08"
+        rotation="0 0 0"
+        animation="property: rotation; to: 0 360 0; loop: true; dur: 8000; easing: linear">
+      </a-entity>
+    </a-entity>
+
+    <!-- MOMOS (targetIndex: 1) -->
+    <a-entity mindar-image-target="targetIndex: 1"
+              id="target-momos">
+      <a-entity
+        gltf-model="#momos-glb"
+        position="0 0.1 0"
+        scale="0.08 0.08 0.08"
+        animation="property: rotation; to: 0 360 0; loop: true; dur: 8000; easing: linear">
+      </a-entity>
+    </a-entity>
+
+    <!-- THALI (targetIndex: 2) -->
+    <a-entity mindar-image-target="targetIndex: 2"
+              id="target-thali">
+      <a-entity
+        gltf-model="#thali-glb"
+        position="0 0.1 0"
+        scale="0.08 0.08 0.08"
+        animation="property: rotation; to: 0 360 0; loop: true; dur: 8000; easing: linear">
+      </a-entity>
+    </a-entity>
+
+    <!-- PANEER (targetIndex: 3) -->
+    <a-entity mindar-image-target="targetIndex: 3"
+              id="target-paneer">
+      <a-entity
+        gltf-model="#paneer-glb"
+        position="0 0.1 0"
+        scale="0.08 0.08 0.08"
+        animation="property: rotation; to: 0 360 0; loop: true; dur: 8000; easing: linear">
+      </a-entity>
+    </a-entity>
+
+    <!-- CAKE (targetIndex: 4) -->
+    <a-entity mindar-image-target="targetIndex: 4"
+              id="target-cake">
+      <a-entity
+        gltf-model="#cake-glb"
+        position="0 0.1 0"
+        scale="0.08 0.08 0.08"
+        animation="property: rotation; to: 0 360 0; loop: true; dur: 8000; easing: linear">
+      </a-entity>
+    </a-entity>
+
+    <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+  </a-scene>
+
+  <script>
+    // Dish data for the info card
+    const dishes = {
+      0: {
+        name: "🍕 Margherita Pizza",
+        price: "₹299",
+        desc: "Wood-fired base with San Marzano tomato sauce, fresh mozzarella and basil.",
+        tags: [
+          { label: "Veg", cls: "tag-veg" },
+          { label: "650 kcal", cls: "tag-info" },
+          { label: "20 min", cls: "tag-info" }
+        ]
+      },
+      1: {
+        name: "🥟 Steamed Momos",
+        price: "₹149",
+        desc: "Handcrafted dumplings with spiced filling, served with schezwan chutney.",
+        tags: [
+          { label: "Veg", cls: "tag-veg" },
+          { label: "280 kcal", cls: "tag-info" },
+          { label: "15 min", cls: "tag-info" }
+        ]
+      },
+      2: {
+        name: "🍛 Dal Tadka Thali",
+        price: "₹199",
+        desc: "Slow-cooked yellow lentils, boondi raita, fresh rotis, cucumber and buttermilk.",
+        tags: [
+          { label: "Veg", cls: "tag-veg" },
+          { label: "520 kcal", cls: "tag-info" },
+          { label: "25 min", cls: "tag-info" }
+        ]
+      },
+      3: {
+        name: "🫕 Paneer Butter Masala",
+        price: "₹249",
+        desc: "Cottage cheese in rich tomato-cream gravy, served with freshly made rotis.",
+        tags: [
+          { label: "Veg", cls: "tag-veg" },
+          { label: "480 kcal", cls: "tag-info" },
+          { label: "20 min", cls: "tag-info" }
+        ]
+      },
+      4: {
+        name: "🍰 Dark Chocolate Gateau",
+        price: "₹179",
+        desc: "Layers of rich dark chocolate sponge with ganache, wafer rolls and cherry.",
+        tags: [
+          { label: "Veg", cls: "tag-veg" },
+          { label: "420 kcal", cls: "tag-info" },
+          { label: "Chef's Pick", cls: "tag-info" }
+        ]
+      }
+    }
+
+    const card = document.getElementById('dish-card')
+    const cardName = document.getElementById('card-name')
+    const cardPrice = document.getElementById('card-price')
+    const cardDesc = document.getElementById('card-desc')
+    const cardTags = document.getElementById('card-tags')
+
+    function showCard(index) {
+      const dish = dishes[index]
+      if (!dish) return
+      cardName.textContent = dish.name
+      cardPrice.textContent = dish.price
+      cardDesc.textContent = dish.desc
+      cardTags.innerHTML = dish.tags.map(t =>
+        `<span class="tag ${t.cls}">${t.label}</span>`
+      ).join('')
+      card.style.display = 'block'
+    }
+
+    function hideCard() {
+      card.style.display = 'none'
+    }
+
+    // Listen for target found/lost events on each entity
+    const sceneEl = document.querySelector('a-scene')
+
+    sceneEl.addEventListener('loaded', () => {
+      // Hide loading screen
+      setTimeout(() => {
+        const ls = document.getElementById('loading-screen')
+        ls.style.opacity = '0'
+        setTimeout(() => ls.style.display = 'none', 500)
+      }, 1500)
+
+      // Attach events to each target
+      Object.keys(dishes).forEach(index => {
+        const el = document.getElementById(`target-${['pizza','momos','thali','paneer','cake'][index]}`)
+        if (!el) return
+        el.addEventListener('targetFound', () => showCard(Number(index)))
+        el.addEventListener('targetLost',  () => hideCard())
+      })
+    })
+  </script>
+</body>
+</html>
