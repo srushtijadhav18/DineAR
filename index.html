@@ -159,7 +159,7 @@
         gltf-model="#pizza-glb"
         position="0 0.02 0"
         scale="0.6 0.6 0.6"
-        rotation="-90 0 0"
+        rotation="90 0 0"
         gesture-handler>
         
       </a-entity>
@@ -171,8 +171,8 @@
       <a-entity
         gltf-model="#momos-glb"
         position="0 0.02 0"
-        scale="0.6 0.6 0.6"
-        rotation="-90 0 0"
+        scale="0.9 0.9 0.9"
+        rotation="90 0 0"
         gesture-handler>
       </a-entity>
     </a-entity>
@@ -183,8 +183,8 @@
       <a-entity
         gltf-model="#thali-glb"
         position="0 0.02 0"
-        scale="0.8 0.8 0.8"
-        rotation="-90 0 0"
+        scale="40 40 40"
+        rotation="90 0 0"
         gesture-handler>
 
       </a-entity>
@@ -196,8 +196,8 @@
       <a-entity
         gltf-model="#paneer-glb"
         position="0 0.02 0"
-        scale="0.8 0.8 0.8"
-        rotation="-90 0 0"
+        scale="40 40 40"
+        rotation="90 0 0"
         gesture-handler>
        
       </a-entity>
@@ -208,9 +208,9 @@
               id="target-cake">
       <a-entity
         gltf-model="#cake-glb"
-        position="0 0.02 0"
-        scale="0.25 0.25 0.25"
-        rotation="-90 0 0"
+        position="0 0.01 0"
+        scale="0.002 0.002 0.002"
+        rotation="90 0 0"
         gesture-handler>
       
       </a-entity>
@@ -329,7 +329,7 @@ AFRAME.registerComponent('gesture-handler', {
 
       // ROTATE
       if (e.touches.length === 1) {
-        this.el.object3D.rotation.z += 0.01;
+        this.el.object3D.rotation.y += 0.01;
       }
 
       // ZOOM
