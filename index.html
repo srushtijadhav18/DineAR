@@ -136,12 +136,26 @@ AFRAME.registerComponent('auto-normalize', {
     targetSize: { type: 'number', default: 0.5 }
   },
 
-  init: function () {
+ init: function () {
     this.normalized = false;
     this.targetEl = this.el.parentEl;
 
     this.targetEl.addEventListener('targetFound', () => {
       if (this.normalized) return;
+
+      // CAKE DEEP DEBUG
+      if (this.el.getAttribute('gltf-model') === '#cake-glb') {
+        const dbg = document.getElementById('debug-overlay');
+        dbg.innerHTML = 'CAKE DEBUG:<br>';
+        const obj = this.el.object3D;
+        let count = 0;
+        obj.traverse(node => {
+          count++;
+          dbg.innerHTML += `${node.type} | isMesh:${node.isMesh} | name:"${node.name}"<br>`;
+        });
+        dbg.innerHTML += `total nodes: ${count}<br>`;
+      }
+
       this.doNormalize();
     });
   },
