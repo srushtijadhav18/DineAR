@@ -103,54 +103,24 @@
     The image target plane is 1 unit wide by default. 0.5 = fills roughly half the card.
   -->
 
-<!-- PIZZA (targetIndex: 0) -->
-  <a-entity mindar-image-target="targetIndex: 0" id="target-pizza">
-    <a-entity
-      gltf-model="#pizza-glb"
-      rotation="90 0 0"
-      auto-normalize="targetSize: 0.8"
-      gesture-handler>
-    </a-entity>
+<a-entity mindar-image-target="targetIndex: 0" id="target-pizza">
+    <a-entity gltf-model="#pizza-glb" rotation="90 0 0" auto-normalize="targetSize: 0.8" gesture-handler></a-entity>
   </a-entity>
 
-  <!-- MOMOS (targetIndex: 1) -->
   <a-entity mindar-image-target="targetIndex: 1" id="target-momos">
-    <a-entity
-      gltf-model="#momos-glb"
-      rotation="90 0 0"
-      auto-normalize="targetSize: 0.6"
-      gesture-handler>
-    </a-entity>
+    <a-entity gltf-model="#momos-glb" rotation="90 0 0" auto-normalize="targetSize: 0.8" gesture-handler></a-entity>
   </a-entity>
 
-  <!-- THALI (targetIndex: 2) -->
   <a-entity mindar-image-target="targetIndex: 2" id="target-thali">
-    <a-entity
-      gltf-model="#thali-glb"
-      rotation="90 0 0"
-      auto-normalize="targetSize: 0.7"
-      gesture-handler>
-    </a-entity>
+    <a-entity gltf-model="#thali-glb" rotation="90 0 0" auto-normalize="targetSize: 1.2" gesture-handler></a-entity>
   </a-entity>
 
-  <!-- PANEER (targetIndex: 3) -->
   <a-entity mindar-image-target="targetIndex: 3" id="target-paneer">
-    <a-entity
-      gltf-model="#paneer-glb"
-      rotation="90 0 0"
-      auto-normalize="targetSize: 0.6"
-      gesture-handler>
-    </a-entity>
+    <a-entity gltf-model="#paneer-glb" rotation="90 0 0" auto-normalize="targetSize: 1.2" gesture-handler></a-entity>
   </a-entity>
 
-  <!-- CAKE (targetIndex: 4) -->
   <a-entity mindar-image-target="targetIndex: 4" id="target-cake">
-    <a-entity
-      gltf-model="#cake-glb"
-      rotation="90 0 0"
-      auto-normalize="targetSize: 0.5"
-      gesture-handler>
-    </a-entity>
+    <a-entity gltf-model="#cake-glb" rotation="90 0 0" auto-normalize="targetSize: 0.8" gesture-handler></a-entity>
   </a-entity>
 
   <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
@@ -168,73 +138,79 @@ AFRAME.registerComponent('auto-normalize', {
 
   init: function () {
     this.normalized = false;
-    
-    // Get the parent mindar-image-target entity
-    const targetEl = this.el.parentEl;
-    
-    targetEl.addEventListener('targetFound', () => {
-      // Only normalize once — no need to redo it every scan
+    this.targetEl = this.el.parentEl;
+
+    this.targetEl.addEventListener('targetFound', () => {
       if (this.normalized) return;
-      
-      setTimeout(() => {
-        const obj = this.el.object3D;
-        const box = new THREE.Box3();
-        let meshCount = 0;
-        const dbg = document.getElementById('debug-overlay');
-
-        obj.traverse(child => {
-          if (child.isMesh || child.isSkinnedMesh) {
-            meshCount++;
-            if (!child.geometry || !child.geometry.attributes.position) return;
-            
-            // Use geometry bounding box directly (local space) — avoids world matrix issues
-            child.geometry.computeBoundingBox();
-            const geoBB = child.geometry.boundingBox.clone();
-            
-            // Apply the child's own local matrix only
-            geoBB.applyMatrix4(child.matrixWorld);
-            
-            if (!geoBB.isEmpty()) box.union(geoBB);
-          }
-        });
-
-        dbg.innerHTML += `meshes found: ${meshCount}<br>`;
-
-        if (box.isEmpty() || meshCount === 0) {
-          dbg.innerHTML += '❌ empty — trying fallback<br>';
-          
-          // FALLBACK: use setFromObject on the whole object3D
-          box.setFromObject(obj);
-        }
-
-        const size   = new THREE.Vector3();
-        const center = new THREE.Vector3();
-        box.getSize(size);
-        box.getCenter(center);
-
-        const maxDim = Math.max(size.x, size.y, size.z);
-        
-        dbg.innerHTML += `maxDim: ${maxDim}<br>`;
-        
-        if (!maxDim || maxDim === 0 || isNaN(maxDim)) {
-          dbg.innerHTML += '❌ maxDim invalid, skipping<br>';
-          return;
-        }
-
-        const s = this.data.targetSize / maxDim;
-
-        this.el.object3D.scale.setScalar(s);
-        this.el.object3D.position.set(
-          -center.x * s,
-          -box.min.y * s,
-          -center.z * s
-        );
-
-        this.normalized = true;
-        dbg.innerHTML += `✓ scale=${s.toFixed(5)}<br>`;
-        
-      }, 50);
+      this.doNormalize();
     });
+  },
+
+  // Called every frame by A-Frame
+  tick: function () {
+    if (this.normalized) return;
+    const obj = this.el.object3D;
+    if (obj.scale.x !== this.computedScale) {
+      this.applyScale();
+    }
+  },
+
+  doNormalize: function () {
+    const obj = this.el.object3D;
+    const box = new THREE.Box3();
+    let meshCount = 0;
+    const dbg = document.getElementById('debug-overlay');
+
+    obj.traverse(child => {
+      if (child.isMesh || child.isSkinnedMesh) {
+        meshCount++;
+        if (!child.geometry || !child.geometry.attributes.position) return;
+        child.geometry.computeBoundingBox();
+        const geoBB = child.geometry.boundingBox.clone();
+        geoBB.applyMatrix4(child.matrixWorld);
+        if (!geoBB.isEmpty()) box.union(geoBB);
+      }
+    });
+
+    // Fallback for cake or broken models
+    if (box.isEmpty() || meshCount === 0) {
+      box.setFromObject(obj);
+    }
+
+    const size   = new THREE.Vector3();
+    const center = new THREE.Vector3();
+    box.getSize(size);
+    box.getCenter(center);
+
+    const maxDim = Math.max(size.x, size.y, size.z);
+
+    if (!maxDim || isNaN(maxDim) || maxDim === 0) {
+      dbg.innerHTML += `❌ ${this.el.getAttribute('gltf-model')} failed<br>`;
+      return;
+    }
+
+    const s = this.data.targetSize / maxDim;
+    this.computedScale = s;
+    this.computedCenter = center;
+    this.computedBox = box;
+
+    this.applyScale();
+    this.normalized = true;
+
+    dbg.innerHTML += `✓ ${this.data.targetSize} / ${maxDim.toFixed(1)} = ${s.toFixed(5)}<br>`;
+  },
+
+  applyScale: function () {
+    if (!this.computedScale) return;
+    const s = this.computedScale;
+    const center = this.computedCenter;
+    const box = this.computedBox;
+    this.el.object3D.scale.setScalar(s);
+    this.el.object3D.position.set(
+      -center.x * s,
+      -box.min.y * s,
+      -center.z * s
+    );
   }
 });
 
