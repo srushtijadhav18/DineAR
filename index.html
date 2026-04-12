@@ -107,7 +107,7 @@
   <a-entity mindar-image-target="targetIndex: 0" id="target-pizza">
     <a-entity
       gltf-model="#pizza-glb"
-      rotation="-90 0 0"
+      rotation="90 0 0"
       auto-normalize="targetSize: 0.8"
       gesture-handler>
     </a-entity>
@@ -117,7 +117,7 @@
   <a-entity mindar-image-target="targetIndex: 1" id="target-momos">
     <a-entity
       gltf-model="#momos-glb"
-      rotation="-90 0 0"
+      rotation="90 0 0"
       auto-normalize="targetSize: 0.6"
       gesture-handler>
     </a-entity>
@@ -127,7 +127,7 @@
   <a-entity mindar-image-target="targetIndex: 2" id="target-thali">
     <a-entity
       gltf-model="#thali-glb"
-      rotation="-90 0 0"
+      rotation="90 0 0"
       auto-normalize="targetSize: 0.7"
       gesture-handler>
     </a-entity>
@@ -137,7 +137,7 @@
   <a-entity mindar-image-target="targetIndex: 3" id="target-paneer">
     <a-entity
       gltf-model="#paneer-glb"
-      rotation="-90 0 0"
+      rotation="90 0 0"
       auto-normalize="targetSize: 0.6"
       gesture-handler>
     </a-entity>
@@ -147,7 +147,7 @@
   <a-entity mindar-image-target="targetIndex: 4" id="target-cake">
     <a-entity
       gltf-model="#cake-glb"
-      rotation="-90 0 0"
+      rotation="90 0 0"
       auto-normalize="targetSize: 0.5"
       gesture-handler>
     </a-entity>
@@ -233,7 +233,7 @@ AFRAME.registerComponent('auto-normalize', {
         this.normalized = true;
         dbg.innerHTML += `✓ scale=${s.toFixed(5)}<br>`;
         
-      }, 500);
+      }, 50);
     });
   }
 });
