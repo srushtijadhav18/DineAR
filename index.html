@@ -108,19 +108,19 @@
   </a-entity>
 
   <a-entity mindar-image-target="targetIndex: 1" id="target-momos">
-    <a-entity gltf-model="#momos-glb" rotation="90 0 0" auto-normalize="targetSize: 5" gesture-handler></a-entity>
+    <a-entity gltf-model="#momos-glb" rotation="90 0 0" auto-normalize="targetSize: 8" gesture-handler></a-entity>
   </a-entity>
 
  <a-entity mindar-image-target="targetIndex: 2" id="target-thali">
-    <a-entity gltf-model="#thali-glb" rotation="90 0 0" auto-normalize="targetSize: 8" gesture-handler></a-entity>
+    <a-entity gltf-model="#thali-glb" rotation="90 0 0" auto-normalize="targetSize: 12" gesture-handler></a-entity>
   </a-entity>
 
   <a-entity mindar-image-target="targetIndex: 3" id="target-paneer">
-    <a-entity gltf-model="#paneer-glb" rotation="90 0 0" auto-normalize="targetSize: 8" gesture-handler></a-entity>
+    <a-entity gltf-model="#paneer-glb" rotation="90 0 0" auto-normalize="targetSize: 12" gesture-handler></a-entity>
   </a-entity>
 
   <a-entity mindar-image-target="targetIndex: 4" id="target-cake">
-    <a-entity gltf-model="#cake-glb" rotation="90 0 0" auto-normalize="targetSize: 0.8" gesture-handler></a-entity>
+    <a-entity gltf-model="#cake-glb" rotation="90 0 0" auto-normalize="targetSize: 8" gesture-handler></a-entity>
   </a-entity>
 
   <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
@@ -161,8 +161,8 @@ AFRAME.registerComponent('auto-normalize', {
     let meshCount = 0;
     const dbg = document.getElementById('debug-overlay');
 
-    obj.traverse(child => {
-      if (child.isMesh || child.isSkinnedMesh) {
+   obj.traverse(child => {
+   if (child.isMesh || child.isSkinnedMesh || child.type === 'Mesh') {
         meshCount++;
         if (!child.geometry || !child.geometry.attributes.position) return;
         child.geometry.computeBoundingBox();
