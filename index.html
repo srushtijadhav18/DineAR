@@ -136,29 +136,35 @@ AFRAME.registerComponent('auto-normalize', {
     targetSize: { type: 'number', default: 0.5 }
   },
 
- init: function () {
-    this.normalized = false;
-    this.targetEl = this.el.parentEl;
+init: function () {
+  this.normalized = false;
+  this.targetEl = this.el.parentEl;
+  this.modelReady = false;
 
-    this.targetEl.addEventListener('targetFound', () => {
-      if (this.normalized) return;
+  // Wait for model to load first
+  this.el.addEventListener('model-loaded', () => {
+    this.modelReady = true;
+    document.getElementById('debug-overlay').innerHTML += 'model ready!<br>';
+  });
 
-      // CAKE DEEP DEBUG
-      if (this.el.getAttribute('gltf-model') === '#cake-glb') {
-        const dbg = document.getElementById('debug-overlay');
-        dbg.innerHTML = 'CAKE DEBUG:<br>';
-        const obj = this.el.object3D;
-        let count = 0;
-        obj.traverse(node => {
-          count++;
-          dbg.innerHTML += `${node.type} | isMesh:${node.isMesh} | name:"${node.name}"<br>`;
-        });
-        dbg.innerHTML += `total nodes: ${count}<br>`;
-      }
+  this.targetEl.addEventListener('targetFound', () => {
+    if (this.normalized) return;
 
-      this.doNormalize();
-    });
-  },
+    if (!this.modelReady) {
+      document.getElementById('debug-overlay').innerHTML += 'model not ready yet, waiting...<br>';
+      // Keep trying every 500ms until model is ready
+      const wait = setInterval(() => {
+        if (this.modelReady) {
+          clearInterval(wait);
+          this.doNormalize();
+        }
+      }, 500);
+      return;
+    }
+
+    this.doNormalize();
+  });
+},
 
   // Called every frame by A-Frame
   tick: function () {
